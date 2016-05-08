@@ -1,0 +1,140 @@
+@code_type sml .sml
+
+@title Problem 4
+
+@s Problem Definition.
+A palindromic number reads the same both ways. The largest palindrome made from the product of two 2-digit numbers is 9009 = 91 × 99.
+
+Find the largest palindrome made from the product of two 3-digit numbers.
+
+
+@s Program Layout
+The main structure is a series of definitions followed by the main call.
+
+--- problem4.sml
+@{Define log_message}
+@{Define is_palindrome}
+@{Define Dynamic Algorithm}
+@{Compute and print result}
+---
+
+
+
+@s Detecting Palindromes
+The easiest way to check if a product is a palindrome in ML is to convert the number to a string and compare it against its reversed version. We define a composed function, *reverse_string*, of a string explosion to characters, the reverse list function *rev*, and the *implode* function--which takes a list of chars and turns it back into a string. *is_palindrome* then returns the comparison as a **bool**.
+
+--- Define is_palindrome
+val reverse_string = implode o rev o explode;
+
+fun is_palindrome (x, y) = 
+	let val product = Int.toString (x * y) in
+		if(product = (reverse_string product)) then true
+		else false
+	end
+---
+	
+@s The Dynamic Algorithm 
+The dynamic algorithm uses memoization to avoid repeated traversals down each branch of the search space.  The base dynamic function is defined as mutually recursive with the main call which does the memoization.  The value min_search serves as the cutoff for how far down the search space goes.
+
+
+--- Define Dynamic Algorithm
+@{Define sort}
+@{Define max_op_product}
+
+local
+val min_search = 100
+@{Memoization variables}
+in
+	@{Base dynamic function}
+  and
+  	@{Memoized dynamic function}
+  end;
+---
+
+
+
+@s The Base Dynamic Function
+The dynamic algorithm is based on the idea that for each subproblem defined by a pair of numbers, there is a unique maximum sized palindrome.  This palindrome is either defined by the current pair of numbers product, or the product of a pair of numbers less than or equal to the pair.
+
+The dynamic function itself is:
+$$ Dyn(x, y) = max \left( Dyn(x - 1, y), Dyn(x, y - 1) \right) $$
+Where $Dyn$ returns the largest palindrome for the subproblem.
+
+We start at the top of the search space and work down each branch until we reach *min_search* defined earlier. Because there may not be a palindromic product in some cases we use Option values to denote this.
+
+*Dyn_base* serves as the actual implementation of the dynamic function.
+
+--- Base dynamic function
+fun Dyn_base (NONE) : (int * int) option = NONE
+  | Dyn_base (SOME (x,y)) = if (x > min_search) andalso (y > min_search) then    			
+ 			if (is_palindrome(x,y)) then 								 
+ 				 SOME(x, y)
+ 			else  
+ 		 		(max_op_product (Dyn (SOME(x - 1, y)), Dyn(SOME(x, y - 1))))
+  		else NONE
+---
+
+@s Memoization of the Dynamic Function.
+Memoization is essential to this algorithm because of the naive branching of the dynamic function. Because $Dyn$ takes two parameters, we need a two dimensional memory.  We can use the basis library's **Array2** for this purpose. We also need to know when a memory slot is empty so we can use *SOME (0,0)* to represent this.  The value *max_memory* holds the size of the array in both dimensions--and also represents the range of values to memoize.
+@s
+--- Memoization variables	
+	val max_memory = 1000
+	val memory = Array2.array(max_memory, max_memory, SOME(0, 0))
+---
+
+
+The memoized version of $Dyn$ must check for Option values, and for the empty memory thunk.  If it detects *SOME(0,0)* then it computes the value of $Dyn$ using *Dyn_base*. We sort the x and y values to avoid duplicate equvalent calls because $Dyn(x, y) = Dyn(y, x)$
+@s
+--- Memoized dynamic function
+  	 Dyn (NONE) : (int * int) option = NONE : (int * int) option
+  	  | Dyn (SOME(x, y)) = 
+  	  		let val (sx, sy) = (sort(x, y)) in
+  	  			case Array2.sub(memory, sx, sy) of
+  	  				SOME (0, 0) => let val r = (Dyn_base(SOME(sx, sy))) in
+  	  								  (Array2.update(memory, sx, sy, r);
+  	  								  r)
+  	  						  end
+  	  			  | SOME (x, y) => SOME(x, y)
+  	  			  | NONE => NONE
+  	  		end
+---
+
+
+
+@s The Max Function
+Because we are dealing with Option values, we need the $max$ function to correctly handle the NONE and SOME cases.  *max_op_product* uses the custom greater than function *largest_product* to provide support for the **(int * int)** values.
+--- Define max_op_product 
+fun largest_product((x, y), (x', y')) = 
+	if (x * y) > (x' * y') then (x , y)
+	else (x' , y');
+
+fun max_op_product(NONE, SOME(x,y)) = SOME(x,y)
+  | max_op_product(SOME(x, y), NONE) = SOME(x, y)
+  | max_op_product(NONE, NONE) = NONE
+  | max_op_product(SOME(x, y), SOME(x', y')) = SOME (largest_product((x,y), (x', y')))
+---
+
+@s The Sort Function
+This function is used to make sure that we do not have to traverse the equivalent calls to $Dyn(x, y) = Dyn(y, x)$ by forcing the largest of the two values to be first.
+--- Define sort
+fun sort(x, y) = if x > y then (x, y) else (y, x);
+---
+
+
+@s Data type and Printing
+For this program we are using **(int * int) option** as our primary data unit. log_message is used to print the individual members and their product on a line.
+--- Define log_message
+fun log_message (x, y) = (print ((Int.toString(x * y)) ^ " " ^ (Int.toString(x)) ^ " " ^ (Int.toString(y)) ^ "\n"));
+---
+
+@s Main function call
+This call starts the dynamic algorithm with the problems bounding parameters.
+
+--- Compute and print result
+val result = Dyn(SOME(999,999));
+
+log_message(Option.valOf result);
+---
+---
+Thank you for reading.  The code in this program is provided AS IS.  You are free to use and modify it in any way you see fit.  
+*--Tristan MacCrehan (trismac1@umbc.edu)*

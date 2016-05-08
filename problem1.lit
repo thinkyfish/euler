@@ -1,0 +1,32 @@
+@code_type sml .sml
+
+@title Problem 1
+
+@s Problem Definition
+
+
+If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+
+Find the sum of all the multiples of 3 or 5 below 1000.
+
+@s One Line to Rule them all
+In ML we have excellent list processing tools.  We generate the list of values 1 to 1000 with *List.tabulate*. Then we filter the elements according to *div_3_or_5*.  Finally, we take the sum using *List.foldl*.
+--- Find the sum
+val result = List.foldl (op +) 0 (List.filter div_3_or_5 (List.tabulate(1000, fn x => x)));
+---
+
+@s Check for divisibility
+Defining the divisibility check separately cleans up the main line of code.  *Int.rem* gives the remainder of an integer division.
+
+
+--- Define div_3_or_5
+fun div_3_or_5 x = Int.rem(x , 3) = 0 orelse Int.rem(x , 5) = 0;
+---
+*div_3_or_5* : **int -> bool**
+
+@s Program Structure
+--- problem1.sml
+@{Define div_3_or_5}
+@{Find the sum}
+print ((Int.toString result) ^ "\n");
+---
