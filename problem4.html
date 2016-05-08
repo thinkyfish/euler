@@ -68,7 +68,7 @@ body{min-width:200px;max-width:850px;margin:0 auto;padding:30px;}.chapter-nav{fo
 </div>
 </div>
 <a name="1:3"><div class="section"><h4>3. Detecting Palindromes</h4></a>
-<p>The easiest way to check if a product is a palindrome in ML is to convert the number to a string and compare it against its reversed version. We define a composed function, <em>reverse_string</em>, of a string explosion to characters, the reverse list function <em>rev</em>, and the <em>implode</em> function--which takes a list of chars and turns it back into a string. <em>is_palindrome</em> then returns the comparison as a <strong>bool</strong>.
+<p>The easiest way to check if a product is a palindrome in ML is to convert the number to a string and compare it against its reversed version. We define a composed function, <code>reverse_string</code>, of a string explosion to characters, the reverse list function <code>rev</code>, and the <code>implode</code> function--which takes a list of chars and turns it back into a string. <code>is_palindrome</code> then returns the comparison as a <strong>bool</strong>.
 </p>
 
 <div class="codeblock">
@@ -76,7 +76,7 @@ body{min-width:200px;max-width:850px;margin:0 auto;padding:30px;}.chapter-nav{fo
 <pre class="prettyprint lang-sml">
 val reverse_string = implode o rev o explode;
 
-fun is_palindrome (x, y) = 
+fun is_palindrome (x, y) =
 	let val product = Int.toString (x * y) in
 		if(product = (reverse_string product)) then true
 		else false
@@ -88,7 +88,7 @@ fun is_palindrome (x, y) =
 </div>
 </div>
 <a name="1:4"><div class="section"><h4>4. The Dynamic Algorithm</h4></a>
-<p>The dynamic algorithm uses memoization to avoid repeated traversals down each branch of the search space.  The base dynamic function is defined as mutually recursive with the main call which does the memoization.  The value min_search serves as the cutoff for how far down the search space goes.
+<p>The dynamic algorithm uses memoization to avoid repeated traversals down each branch of the search space.  The base dynamic function is defined as mutually recursive with the main call which does the memoization.  The value <code>min_search</code> serves as the cutoff for how far down the search space goes.
 </p>
 
 <div class="codeblock">
@@ -118,19 +118,19 @@ in
 <div class="math"> Dyn(x, y) = max \left( Dyn(x - 1, y), Dyn(x, y - 1) \right) </div>
 Where <span class="math">Dyn</span> returns the largest palindrome for the subproblem.
 </p>
-<p>We start at the top of the search space and work down each branch until we reach <em>min_search</em> defined earlier. Because there may not be a palindromic product in some cases we use Option values to denote this.
+<p>We start at the top of the search space and work down each branch until we reach <code>min_search</code> defined earlier. Because there may not be a palindromic product in some cases we use Option values to denote this.
 </p>
-<p><em>Dyn_base</em> serves as the actual implementation of the dynamic function.
+<p><code>Dyn_base</code> serves as the actual implementation of the dynamic function.
 </p>
 
 <div class="codeblock">
 <span class="codeblock_name">{Base dynamic function <a href="problem4.html#1:5">5</a>}</span>
 <pre class="prettyprint lang-sml">
 fun Dyn_base (NONE) : (int * int) option = NONE
-  | Dyn_base (SOME (x,y)) = if (x &gt; min_search) andalso (y &gt; min_search) then    			
- 			if (is_palindrome(x,y)) then 								 
+  | Dyn_base (SOME (x,y)) = if (x &gt; min_search) andalso (y &gt; min_search) then
+ 			if (is_palindrome(x,y)) then
  				 SOME(x, y)
- 			else  
+ 			else
  		 		(max_op_product (Dyn (SOME(x - 1, y)), Dyn(SOME(x, y - 1))))
   		else NONE
 </pre>
@@ -140,7 +140,7 @@ fun Dyn_base (NONE) : (int * int) option = NONE
 </div>
 </div>
 <a name="1:6"><div class="section"><h4>6. Memoization of the Dynamic Function.</h4></a>
-<p>Memoization is essential to this algorithm because of the naive branching of the dynamic function. Because <span class="math">Dyn</span> takes two parameters, we need a two dimensional memory.  We can use the basis library's <strong>Array2</strong> for this purpose. We also need to know when a memory slot is empty so we can use <em>SOME (0,0)</em> to represent this.  The value <em>max_memory</em> holds the size of the array in both dimensions--and also represents the range of values to memoize.
+<p>Memoization is essential to this algorithm because of the naive branching of the dynamic function. Because <span class="math">Dyn</span> takes two parameters, we need a two dimensional memory.  We can use the basis library's <strong>Array2</strong> for this purpose. We also need to know when a memory slot is empty so we can use <code>SOME (0,0)</code> to represent this.  The value <code>max_memory</code> holds the size of the array in both dimensions--and also represents the range of values to memoize.
 </p>
 
 </div>
@@ -156,7 +156,7 @@ fun Dyn_base (NONE) : (int * int) option = NONE
 
 <p class="seealso">Used in section <a href="problem4.html#1:4">4</a></p>
 </div>
-<p>The memoized version of <span class="math">Dyn</span> must check for Option values, and for the empty memory thunk.  If it detects <em>SOME(0,0)</em> then it computes the value of <span class="math">Dyn</span> using <em>Dyn_base</em>. We sort the x and y values to avoid duplicate equvalent calls because <span class="math">Dyn(x, y) = Dyn(y, x)</span>
+<p>The memoized version of <span class="math">Dyn</span> must check for Option values, and for the empty memory thunk.  If it detects <code>SOME(0,0)</code> then it computes the value of <span class="math">Dyn</span> using <code>Dyn_base</code>. We sort the x and y values to avoid duplicate equvalent calls because <span class="math">Dyn(x, y) = Dyn(y, x)</span>
 </p>
 
 </div>
@@ -166,7 +166,7 @@ fun Dyn_base (NONE) : (int * int) option = NONE
 <span class="codeblock_name">{Memoized dynamic function <a href="problem4.html#1:8">8</a>}</span>
 <pre class="prettyprint lang-sml">
   	 Dyn (NONE) : (int * int) option = NONE : (int * int) option
-  	  | Dyn (SOME(x, y)) = 
+  	  | Dyn (SOME(x, y)) =
   	  		let val (sx, sy) = (sort(x, y)) in
   	  			case Array2.sub(memory, sx, sy) of
   	  				SOME (0, 0) =&gt; let val r = (Dyn_base(SOME(sx, sy))) in
@@ -183,13 +183,13 @@ fun Dyn_base (NONE) : (int * int) option = NONE
 </div>
 </div>
 <a name="1:9"><div class="section"><h4>9. The Max Function</h4></a>
-<p>Because we are dealing with Option values, we need the <span class="math">max</span> function to correctly handle the NONE and SOME cases.  <em>max_op_product</em> uses the custom greater than function <em>largest_product</em> to provide support for the <strong>(int * int)</strong> values.
+<p>Because we are dealing with Option values, we need the <span class="math">max</span> function to correctly handle the NONE and SOME cases.  <code>max_op_product</code> uses the custom greater than function <code>largest_product</code> to provide support for the <strong>(int * int)</strong> values.
 </p>
 
 <div class="codeblock">
 <span class="codeblock_name">{Define max_op_product <a href="problem4.html#1:9">9</a>}</span>
 <pre class="prettyprint lang-sml">
-fun largest_product((x, y), (x', y')) = 
+fun largest_product((x, y), (x', y')) =
 	if (x * y) &gt; (x' * y') then (x , y)
 	else (x' , y');
 
@@ -218,7 +218,7 @@ fun sort(x, y) = if x &gt; y then (x, y) else (y, x);
 </div>
 </div>
 <a name="1:11"><div class="section"><h4>11. Data type and Printing</h4></a>
-<p>For this program we are using <strong>(int * int) option</strong> as our primary data unit. log_message is used to print the individual members and their product on a line.
+<p>For this program we are using <strong>(int * int) option</strong> as our primary data unit. <code>log_message</code> is used to print the individual members and their product on a line.
 </p>
 
 <div class="codeblock">
@@ -247,7 +247,7 @@ log_message(Option.valOf result);
 <p class="seealso">Used in section <a href="problem4.html#1:2">2</a></p>
 </div>
 <hr>
-<p>Thank you for reading.  The code in this program is provided AS IS.  You are free to use and modify it in any way you see fit.  
+<p>Thank you for reading.  The code in this program is provided AS IS.  You are free to use and modify it in any way you see fit.
 <em>--Tristan MacCrehan (trismac1@umbc.edu)</em>
 </p>
 

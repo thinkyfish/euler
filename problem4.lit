@@ -21,20 +21,20 @@ The main structure is a series of definitions followed by the main call.
 
 
 @s Detecting Palindromes
-The easiest way to check if a product is a palindrome in ML is to convert the number to a string and compare it against its reversed version. We define a composed function, *reverse_string*, of a string explosion to characters, the reverse list function *rev*, and the *implode* function--which takes a list of chars and turns it back into a string. *is_palindrome* then returns the comparison as a **bool**.
+The easiest way to check if a product is a palindrome in ML is to convert the number to a string and compare it against its reversed version. We define a composed function, `reverse_string`, of a string explosion to characters, the reverse list function `rev`, and the `implode` function--which takes a list of chars and turns it back into a string. `is_palindrome` then returns the comparison as a **bool**.
 
 --- Define is_palindrome
 val reverse_string = implode o rev o explode;
 
-fun is_palindrome (x, y) = 
+fun is_palindrome (x, y) =
 	let val product = Int.toString (x * y) in
 		if(product = (reverse_string product)) then true
 		else false
 	end
 ---
-	
-@s The Dynamic Algorithm 
-The dynamic algorithm uses memoization to avoid repeated traversals down each branch of the search space.  The base dynamic function is defined as mutually recursive with the main call which does the memoization.  The value min_search serves as the cutoff for how far down the search space goes.
+
+@s The Dynamic Algorithm
+The dynamic algorithm uses memoization to avoid repeated traversals down each branch of the search space.  The base dynamic function is defined as mutually recursive with the main call which does the memoization.  The value `min_search` serves as the cutoff for how far down the search space goes.
 
 
 --- Define Dynamic Algorithm
@@ -60,34 +60,34 @@ The dynamic function itself is:
 $$ Dyn(x, y) = max \left( Dyn(x - 1, y), Dyn(x, y - 1) \right) $$
 Where $Dyn$ returns the largest palindrome for the subproblem.
 
-We start at the top of the search space and work down each branch until we reach *min_search* defined earlier. Because there may not be a palindromic product in some cases we use Option values to denote this.
+We start at the top of the search space and work down each branch until we reach `min_search` defined earlier. Because there may not be a palindromic product in some cases we use Option values to denote this.
 
-*Dyn_base* serves as the actual implementation of the dynamic function.
+`Dyn_base` serves as the actual implementation of the dynamic function.
 
 --- Base dynamic function
 fun Dyn_base (NONE) : (int * int) option = NONE
-  | Dyn_base (SOME (x,y)) = if (x > min_search) andalso (y > min_search) then    			
- 			if (is_palindrome(x,y)) then 								 
+  | Dyn_base (SOME (x,y)) = if (x > min_search) andalso (y > min_search) then
+ 			if (is_palindrome(x,y)) then
  				 SOME(x, y)
- 			else  
+ 			else
  		 		(max_op_product (Dyn (SOME(x - 1, y)), Dyn(SOME(x, y - 1))))
   		else NONE
 ---
 
 @s Memoization of the Dynamic Function.
-Memoization is essential to this algorithm because of the naive branching of the dynamic function. Because $Dyn$ takes two parameters, we need a two dimensional memory.  We can use the basis library's **Array2** for this purpose. We also need to know when a memory slot is empty so we can use *SOME (0,0)* to represent this.  The value *max_memory* holds the size of the array in both dimensions--and also represents the range of values to memoize.
+Memoization is essential to this algorithm because of the naive branching of the dynamic function. Because $Dyn$ takes two parameters, we need a two dimensional memory.  We can use the basis library's **Array2** for this purpose. We also need to know when a memory slot is empty so we can use `SOME (0,0)` to represent this.  The value `max_memory` holds the size of the array in both dimensions--and also represents the range of values to memoize.
 @s
---- Memoization variables	
+--- Memoization variables
 	val max_memory = 1000
 	val memory = Array2.array(max_memory, max_memory, SOME(0, 0))
 ---
 
 
-The memoized version of $Dyn$ must check for Option values, and for the empty memory thunk.  If it detects *SOME(0,0)* then it computes the value of $Dyn$ using *Dyn_base*. We sort the x and y values to avoid duplicate equvalent calls because $Dyn(x, y) = Dyn(y, x)$
+The memoized version of $Dyn$ must check for Option values, and for the empty memory thunk.  If it detects `SOME(0,0)` then it computes the value of $Dyn$ using `Dyn_base`. We sort the x and y values to avoid duplicate equvalent calls because $Dyn(x, y) = Dyn(y, x)$
 @s
 --- Memoized dynamic function
   	 Dyn (NONE) : (int * int) option = NONE : (int * int) option
-  	  | Dyn (SOME(x, y)) = 
+  	  | Dyn (SOME(x, y)) =
   	  		let val (sx, sy) = (sort(x, y)) in
   	  			case Array2.sub(memory, sx, sy) of
   	  				SOME (0, 0) => let val r = (Dyn_base(SOME(sx, sy))) in
@@ -102,9 +102,9 @@ The memoized version of $Dyn$ must check for Option values, and for the empty me
 
 
 @s The Max Function
-Because we are dealing with Option values, we need the $max$ function to correctly handle the NONE and SOME cases.  *max_op_product* uses the custom greater than function *largest_product* to provide support for the **(int * int)** values.
---- Define max_op_product 
-fun largest_product((x, y), (x', y')) = 
+Because we are dealing with Option values, we need the $max$ function to correctly handle the NONE and SOME cases.  `max_op_product` uses the custom greater than function `largest_product` to provide support for the **(int * int)** values.
+--- Define max_op_product
+fun largest_product((x, y), (x', y')) =
 	if (x * y) > (x' * y') then (x , y)
 	else (x' , y');
 
@@ -122,7 +122,7 @@ fun sort(x, y) = if x > y then (x, y) else (y, x);
 
 
 @s Data type and Printing
-For this program we are using **(int * int) option** as our primary data unit. log_message is used to print the individual members and their product on a line.
+For this program we are using **(int * int) option** as our primary data unit. `log_message` is used to print the individual members and their product on a line.
 --- Define log_message
 fun log_message (x, y) = (print ((Int.toString(x * y)) ^ " " ^ (Int.toString(x)) ^ " " ^ (Int.toString(y)) ^ "\n"));
 ---
@@ -136,5 +136,5 @@ val result = Dyn(SOME(999,999));
 log_message(Option.valOf result);
 ---
 ---
-Thank you for reading.  The code in this program is provided AS IS.  You are free to use and modify it in any way you see fit.  
+Thank you for reading.  The code in this program is provided AS IS.  You are free to use and modify it in any way you see fit.
 *--Tristan MacCrehan (trismac1@umbc.edu)*

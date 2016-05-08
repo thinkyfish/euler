@@ -2,7 +2,7 @@ fun log_message (x, y) = (print ((Int.toString(x * y)) ^ " " ^ (Int.toString(x))
 
 val reverse_string = implode o rev o explode;
 
-fun is_palindrome (x, y) = 
+fun is_palindrome (x, y) =
 	let val product = Int.toString (x * y) in
 		if(product = (reverse_string product)) then true
 		else false
@@ -10,7 +10,7 @@ fun is_palindrome (x, y) =
 
 fun sort(x, y) = if x > y then (x, y) else (y, x);
 
-fun largest_product((x, y), (x', y')) = 
+fun largest_product((x, y), (x', y')) =
 	if (x * y) > (x' * y') then (x , y)
 	else (x' , y');
 
@@ -27,16 +27,16 @@ val min_search = 100
 
 in
 	fun Dyn_base (NONE) : (int * int) option = NONE
-	  | Dyn_base (SOME (x,y)) = if (x > min_search) andalso (y > min_search) then    			
-	 			if (is_palindrome(x,y)) then 								 
+	  | Dyn_base (SOME (x,y)) = if (x > min_search) andalso (y > min_search) then
+	 			if (is_palindrome(x,y)) then
 	 				 SOME(x, y)
-	 			else  
+	 			else
 	 		 		(max_op_product (Dyn (SOME(x - 1, y)), Dyn(SOME(x, y - 1))))
 	  		else NONE
 
   and
   	  	 Dyn (NONE) : (int * int) option = NONE : (int * int) option
-  	  	  | Dyn (SOME(x, y)) = 
+  	  	  | Dyn (SOME(x, y)) =
   	  	  		let val (sx, sy) = (sort(x, y)) in
   	  	  			case Array2.sub(memory, sx, sy) of
   	  	  				SOME (0, 0) => let val r = (Dyn_base(SOME(sx, sy))) in

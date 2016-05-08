@@ -33,7 +33,7 @@ begin
 	i
 end
 ---
-
+@s Print Result
 ---Print Result
 println("Result: $(problem5(1:20))")
 ---
