@@ -9,7 +9,7 @@ What is the smallest positive number that is evenly divisible by all of the numb
 
 @s Program Layout
 ---problem5.jl
-@{Define div_le_evenly}
+@{Define div_range_evenly}
 @{Main function}
 @{Print Result}
 ---
@@ -17,17 +17,17 @@ What is the smallest positive number that is evenly divisible by all of the numb
 
 @s Search Condition
 For the search we need a simple way to check for divisibility over the list of all numbers less than or equal to the given value. We create a list of the remainders and then take the sum.  If the sum is zero, we have confirmed divisibility.
----Define div_le_evenly
-div_le_evenly(n::Int,range::Range{Int}) = sum(rem(n, range)) == 0
+---Define div_range_evenly
+div_range_evenly(n::Int,range::Range{Int}) = sum(rem(n, range)) == 0
 ---
 
 @s Search Function
 This search function will find the lowest integer that evenly divides all the numbers in the given range.  The last value in the range named `range.stop` is used to increase index `i` because the result must be divisible by the largest value so it must be a multiple of `range.stop`.
 ---Main function
-problem5(range::Range{Int}) = 
+problem5(range::Range{Int}) =
 begin
 	i = range.stop # don't start at zero
-	while !div_le_evenly(i,range) 
+	while !div_range_evenly(i,range)
 		i += range.stop
 	end
 	i

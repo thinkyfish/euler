@@ -51,15 +51,6 @@ body{min-width:200px;max-width:850px;margin:0 auto;padding:30px;}.chapter-nav{fo
 <p>By considering the terms in the Fibonacci sequence whose values do not exceed four million, find the sum of the even-valued terms.
 </p>
 
-<div class="codeblock">
-<span class="codeblock_name">{Define even <a href="problem2.html#1:1">1</a>}</span>
-<pre class="prettyprint lang-sml">
-fun even a = Int.rem (a, 2) = 0;
-</pre>
-
-
-<p class="seealso">Used in section <a href="problem2.html#1:4">4</a></p>
-</div>
 </div>
 <a name="1:2"><div class="section"><h4>2. Memoized version of fibonacci function</h4></a>
 
@@ -112,6 +103,16 @@ fun fibs_starting_at n =
 <a name="1:4"><div class="section"><h4>4. Take the sum of all the even values</h4></a>
 
 <div class="codeblock">
+<span class="codeblock_name">{Define even <a href="problem2.html#1:4">4</a>}</span>
+<pre class="prettyprint lang-sml">
+fun even a = Int.rem (a, 2) = 0;
+</pre>
+
+
+
+</div>
+
+<div class="codeblock">
 <span class="codeblock_name">{Compute result <a href="problem2.html#1:4">4</a>}</span>
 <pre class="prettyprint lang-sml">
 val result = List.foldl (op +) 0 (List.filter even (fibs_starting_at 1));
@@ -124,7 +125,7 @@ val result = List.foldl (op +) 0 (List.filter even (fibs_starting_at 1));
 <div class="codeblock">
 <span class="codeblock_name">{<strong>problem2.sml</strong> <a href="problem2.html#1:4">4</a>}</span>
 <pre class="prettyprint lang-sml">
-<span class="nocode pln">{Define even, <a href="problem2.html#1:1">1</a>}</span>
+<span class="nocode pln">{Define even, <a href="problem2.html#1:4">4</a>}</span>
 <span class="nocode pln">{Define fib, <a href="problem2.html#1:2">2</a>}</span>
 <span class="nocode pln">{Define fibs_starting_at, <a href="problem2.html#1:3">3</a>}</span>
 <span class="nocode pln">{Compute result, <a href="problem2.html#1:4">4</a>}</span>
