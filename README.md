@@ -1,6 +1,6 @@
 # euler
 ###Solutions for Project Euler
-These are done in a literate programming style.
+These are done in a literate programming style using Standard ML and Julia.
 
 
 [Problem 1](http://thinkyfish.github.com/euler/problem1.html)
